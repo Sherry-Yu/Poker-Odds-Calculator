@@ -1,71 +1,14 @@
-import numpy as np
 from scipy import stats
+
+from utility import *
+from card import *
 from value import *
-
-class Rank:
-    def __init__(self, name):
-        self.name = str(name)
-        if name == 'A':
-            self.value = 14
-        elif name == 'K':
-            self.value = 13
-        elif name == 'Q':
-            self.value = 12
-        elif name == 'J':
-            self.value = 11
-        elif name == 'T':
-            self.value = 10
-        else:
-            self.value = int(name)
-
-    def __lt__(self, other):
-        return self.value < other.value
-
-    def __le__(self, other):
-        return self.value <= other.value
-
-    def __gt__(self, other):
-        return self.value > other.value
-
-    def __ge__(self, other):
-        return self.value >= other.value
-
-
-class Suit:
-    def __init__(self, name):
-        if name == 'S' or name == 'Spade':
-            self.name = 'Spade'
-        elif name == 'H' or name == 'Heart':
-            self.name = 'Heart'
-        elif name == 'C' or name == 'Club':
-            self.name = 'Club'
-        elif name == 'D' or name == 'Diamond':
-            self.name = 'Diamond'
-
-
-class Card:
-    def __init__(self, rank, suit):
-        self.rank = Rank(rank)
-        self.suit = Suit(suit)
-
-    def __lt__(self, other):
-        return self.rank < other.rank
-
-    def __le__(self, other):
-        return self.rank <= other.rank
-
-    def __gt__(self, other):
-        return self.rank > other.rank
-
-    def __ge__(self, other):
-        return self.rank >= other.rank
-
 
 class Hand:
     def __init__(self, cards):
-        self.cards = np.sort(cards)
-        self.ranks = np.array([c.rank.value for c in self.cards])
-        self.suits = np.array([c.suit.name for c in self.cards])
+        self.cards = sorted(cards, reverse=True)
+        self.ranks = sorted([c.rank.value for c in self.cards], reverse=True)
+        self.suits = [c.suit.name for c in self.cards]
 
     def __eq__(self, other):
         selfValue = self.getValue()
@@ -86,8 +29,8 @@ class Hand:
         ranks = self.ranks
         suits = self.suits
 
-        isFlush = (suits.unique().shape[0] == 1)
-        isStraight = ((ranks == np.array([2,3,4,5,14])) or (ranks.diff() == np.array([1,1,1,1])))
+        isFlush = (len(set(suits)) == 1)
+        isStraight = ((ranks == [14,5,4,3,2]) or (diff(ranks) == [1,1,1,1]))
 
         rankDict = {k:v for k,v in stats.itemfreq(ranks)}
         length = len(rankDict)
